@@ -1,0 +1,128 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Experience</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Your career timeline, shown newest first by start year</p>
+  </div>
+  <button type="button" (click)="openAdd()"
+    class="px-5 py-2.5 rounded-xl text-sm font-bold bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 hover:scale-105 active:scale-95 transition-all">
+    <i class="fas fa-plus mr-2"></i> Add Experience
+  </button>
+</div>
+
+@if(showForm){
+  <form id="experience-form" [formGroup]="myForm" (ngSubmit)="save()" novalidate class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 max-w-3xl mb-10 scroll-mt-24">
+    <h2 class="text-lg font-bold text-slate-900 dark:text-white">
+      <i class="fas text-blue-500 mr-2" [class.fa-plus]="!editingId" [class.fa-pen]="editingId"></i>
+      {{editingId ? 'Edit Experience' : 'Add Experience'}}
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label for="e-role" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Job Title</label>
+        <input id="e-role" type="text" formControlName="role" placeholder="Senior Web Developer" [class]="inputClass('role')">
+        @if(isInvalid(ctrl('role'))){
+          <p class="text-red-500 text-xs mt-1">Job title is required</p>
+        }
+      </div>
+      <div>
+        <label for="e-company" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Company</label>
+        <input id="e-company" type="text" formControlName="company" placeholder="Tech Corp Solutions" [class]="inputClass('company')">
+        @if(isInvalid(ctrl('company'))){
+          <p class="text-red-500 text-xs mt-1">Company is required</p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label for="e-start" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Start Year</label>
+        <input id="e-start" type="text" inputmode="numeric" maxlength="4" formControlName="startDate" placeholder="2023" [class]="inputClass('startDate')">
+        @if(isInvalid(ctrl('startDate'))){
+          <p class="text-red-500 text-xs mt-1">Enter a 4-digit year, like 2023</p>
+        }
+      </div>
+      <div>
+        <label for="e-end" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">End Year</label>
+        <input id="e-end" type="text" inputmode="numeric" maxlength="4" formControlName="endDate" placeholder="2025" [class]="inputClass('endDate', 'disabled:opacity-50 disabled:cursor-not-allowed')">
+        @if(isInvalid(ctrl('endDate'))){
+          <p class="text-red-500 text-xs mt-1">Enter a 4-digit year, like 2025</p>
+        }
+        @else if(hasDateRangeError()){
+          <p class="text-red-500 text-xs mt-1">End year can't be before the start year</p>
+        }
+      </div>
+    </div>
+
+    <label class="inline-flex items-center gap-3 text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+      <input type="checkbox" formControlName="current" class="w-4 h-4 accent-blue-500 cursor-pointer">
+      I currently work here (shows "Present")
+    </label>
+
+    <div>
+      <label for="e-desc" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Description</label>
+      <textarea id="e-desc" rows="5" formControlName="desc" placeholder="What you did and what you achieved in this role..." [class]="inputClass('desc', 'resize-y')"></textarea>
+      @if(isInvalid(ctrl('desc'))){
+        <p class="text-red-500 text-xs mt-1">Description is required</p>
+      }
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-3 pt-2">
+      <button type="button" (click)="closeForm()" class="px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm">Cancel</button>
+      <button type="submit" [disabled]="saving"
+        class="px-8 py-3 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
+        @if(saving){
+          Saving... <i class="fas fa-spinner fa-spin ml-2"></i>
+        }
+        @else{
+          {{editingId ? 'Save Changes' : 'Add Experience'}} <i class="fas fa-floppy-disk ml-2"></i>
+        }
+      </button>
+    </div>
+  </form>
+}
+
+@if(loaded){
+  <div class="space-y-4 max-w-4xl">
+    @for(item of items; track item._id; let i = $index){
+      <article class="glass-card p-6 rounded-2xl">
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{item.role}}</h2>
+          <span class="text-xs font-bold px-3 py-1 rounded-full" [class]="color(i)">{{period(item)}}</span>
+        </div>
+        <div class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3">{{item.company}}</div>
+        <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-3 whitespace-pre-line mb-4">{{item.desc}}</p>
+
+        <div class="flex items-center justify-end gap-1">
+          @if(confirmId == item._id){
+            <span class="text-xs text-slate-500 dark:text-slate-400 mr-1">Delete this experience?</span>
+            <button type="button" (click)="confirmDelete(item)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-colors">Yes</button>
+            <button type="button" (click)="cancelDelete()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">No</button>
+          }
+          @else{
+            <button type="button" (click)="openEdit(item)" [attr.aria-label]="'Edit ' + item.role"
+              class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"><i class="fas fa-pen mr-1"></i> Edit</button>
+            <button type="button" (click)="askDelete(item._id)" [attr.aria-label]="'Delete ' + item.role"
+              class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-red-500/10 transition-colors"><i class="fas fa-trash mr-1"></i> Delete</button>
+          }
+        </div>
+      </article>
+    }
+  </div>
+
+  @if(!items.length){
+    <div class="glass-card p-10 rounded-3xl max-w-xl text-center space-y-3">
+      <i class="fas fa-briefcase text-4xl text-slate-400 dark:text-slate-600"></i>
+      <p class="text-slate-600 dark:text-slate-400">No experience yet. Press <strong>Add Experience</strong> to create the first one.</p>
+    </div>
+  }
+}
+@else if(loadFailed){
+  <div class="glass-card p-8 rounded-3xl max-w-xl text-center space-y-4">
+    <i class="fas fa-triangle-exclamation text-4xl text-amber-500"></i>
+    <p class="text-slate-700 dark:text-slate-300">Could not load your experience. Make sure the backend is running.</p>
+    <button type="button" (click)="loadItems()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all">Try again</button>
+  </div>
+}
+@else{
+  <p class="text-slate-500 dark:text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</p>
+}

@@ -1,0 +1,32 @@
+<div class="glass-card h-full rounded-3xl overflow-hidden hover:border-slate-400 dark:hover:border-slate-700 transition-all duration-300 group cursor-pointer"
+  role="button" tabindex="0" [attr.aria-label]="'View details of ' + project.title"
+  (click)="open()" (keydown.enter)="open()">
+
+  <div class="relative overflow-hidden h-52 bg-slate-200 dark:bg-slate-800">
+    @if(imgURL && !imgFailed){
+      <img [src]="imgURL" [alt]="project.title" (error)="onImgError()"
+        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+    }
+    @else{
+      <div class="w-full h-full flex items-center justify-center bg-linear-to-br from-blue-600/20 to-purple-600/20">
+        <i class="fas fa-image text-5xl text-slate-400 dark:text-slate-600"></i>
+      </div>
+    }
+    <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+      <span class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg shadow-lg group-hover:scale-110 transition-transform">
+        <i class="fas fa-link"></i>
+      </span>
+    </div>
+  </div>
+
+  <div class="p-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-bold px-3 py-1 rounded-full border" [class]="category.tag">{{category.label}}</span>
+      @if(project.techs.length){
+        <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">{{project.techs[0]}}</span>
+      }
+    </div>
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">{{project.title}}</h3>
+    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4 line-clamp-3">{{project.desc}}</p>
+  </div>
+</div>

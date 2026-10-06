@@ -1,0 +1,20 @@
+export interface IProfile{
+    name:string;
+    title:string;
+    badgeText:string;
+    heroText:string;
+    typingTexts:string[];
+    about:string;
+    projectsCompleted:number;
+    yearsExperience:number;
+    clientSatisfaction:number;
+    imgURL:string;
+    cvURL:string;
+    email:string;
+    phone:string;
+    location:string;
+    github:string;
+    linkedIn:string;
+    twitter:string;
+    codepen:string;
+}

@@ -1,0 +1,146 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Skills</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">The skills and progress bars shown in the Skills section</p>
+  </div>
+  <button type="button" (click)="openAdd()"
+    class="px-5 py-2.5 rounded-xl text-sm font-bold bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 hover:scale-105 active:scale-95 transition-all">
+    <i class="fas fa-plus mr-2"></i> Add Skill
+  </button>
+</div>
+
+<!-- Add / Edit Form -->
+@if(showForm){
+  <form id="skill-form" [formGroup]="myForm" (ngSubmit)="save()" novalidate class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 max-w-3xl mb-10 scroll-mt-24">
+    <h2 class="text-lg font-bold text-slate-900 dark:text-white">
+      <i class="fas text-blue-500 mr-2" [class.fa-plus]="!editingId" [class.fa-pen]="editingId"></i>
+      {{editingId ? 'Edit Skill' : 'Add Skill'}}
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label for="s-name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Skill Name</label>
+        <input id="s-name" type="text" formControlName="name" placeholder="Angular" [class]="inputClass('name')">
+        @if(isInvalid(ctrl('name'))){
+          <p class="text-red-500 text-xs mt-1">Skill name is required</p>
+        }
+      </div>
+      <div>
+        <label for="s-category" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Category</label>
+        <select id="s-category" formControlName="category" [class]="inputClass('category')">
+          <option value="frontend">Frontend Development</option>
+          <option value="backend">Backend Development</option>
+          <option value="tools">Tools &amp; DevOps</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label for="s-level" class="flex items-center justify-between text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+        <span>Level</span>
+        <span class="text-blue-600 dark:text-blue-400">{{ctrl('level')?.value}}%</span>
+      </label>
+      <input id="s-level" type="range" min="0" max="100" step="1" formControlName="level" class="w-full accent-blue-500 cursor-pointer">
+      <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden mt-3">
+        <div class="h-full rounded-full bg-blue-500" [style.width.%]="ctrl('level')?.value"></div>
+      </div>
+    </div>
+
+    <div>
+      <label for="s-icon" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Icon (optional)</label>
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xl text-slate-700 dark:text-slate-200 shrink-0">
+          <i [class]="ctrl('icon')?.value || 'fas fa-code'"></i>
+        </div>
+        <input id="s-icon" type="text" formControlName="icon" placeholder="fab fa-angular" [class]="inputClass('icon')">
+      </div>
+      @if(isInvalid(ctrl('icon'))){
+        <p class="text-red-500 text-xs mt-1">Use letters, numbers, spaces and dashes only, like: fab fa-angular</p>
+      }
+      <div class="flex flex-wrap gap-2 mt-3">
+        @for(item of iconSuggestions; track item.icon){
+          <button type="button" (click)="pickIcon(item.icon)"
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+            <i [class]="item.icon"></i> {{item.label}}
+          </button>
+        }
+      </div>
+      <p class="text-slate-500 dark:text-slate-400 text-xs mt-3">The icon of your top Frontend skill and top Backend skill appears on the floating cards in the hero section.</p>
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-3 pt-2">
+      <button type="button" (click)="closeForm()" class="px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm">Cancel</button>
+      <button type="submit" [disabled]="saving"
+        class="px-8 py-3 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
+        @if(saving){
+          Saving... <i class="fas fa-spinner fa-spin ml-2"></i>
+        }
+        @else{
+          {{editingId ? 'Save Changes' : 'Add Skill'}} <i class="fas fa-floppy-disk ml-2"></i>
+        }
+      </button>
+    </div>
+  </form>
+}
+
+@if(loaded){
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    @for(group of groups; track group.key){
+      <section class="glass-card p-6 rounded-3xl">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0" [class]="group.iconBox">
+            <i [class]="group.icon"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-900 dark:text-white">{{group.title}}</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{group.skills.length}} {{group.skills.length == 1 ? 'skill' : 'skills'}}</p>
+          </div>
+        </div>
+
+        @for(skill of group.skills; track skill._id){
+          <div class="py-3 border-t border-slate-200 dark:border-slate-800">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="min-w-0 flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                @if(skill.icon){
+                  <i class="text-slate-400 dark:text-slate-500" [class]="skill.icon"></i>
+                }
+                <span class="truncate">{{skill.name}}</span>
+                <span class="text-xs" [class]="group.percent">{{skill.level}}%</span>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                @if(confirmId == skill._id){
+                  <span class="text-xs text-slate-500 dark:text-slate-400 mr-1">Delete?</span>
+                  <button type="button" (click)="confirmDelete(skill)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-colors">Yes</button>
+                  <button type="button" (click)="cancelDelete()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">No</button>
+                }
+                @else{
+                  <button type="button" (click)="openEdit(skill)" [attr.aria-label]="'Edit ' + skill.name"
+                    class="p-2 rounded-lg text-slate-500 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"><i class="fas fa-pen"></i></button>
+                  <button type="button" (click)="askDelete(skill._id)" [attr.aria-label]="'Delete ' + skill.name"
+                    class="p-2 rounded-lg text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"><i class="fas fa-trash"></i></button>
+                }
+              </div>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full" [class]="group.bar" [style.width.%]="skill.level"></div>
+            </div>
+          </div>
+        }
+        @empty{
+          <p class="py-4 border-t border-slate-200 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">No skills in this category yet.</p>
+        }
+      </section>
+    }
+  </div>
+}
+@else if(loadFailed){
+  <div class="glass-card p-8 rounded-3xl max-w-xl text-center space-y-4">
+    <i class="fas fa-triangle-exclamation text-4xl text-amber-500"></i>
+    <p class="text-slate-700 dark:text-slate-300">Could not load your skills. Make sure the backend is running.</p>
+    <button type="button" (click)="loadSkills()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all">Try again</button>
+  </div>
+}
+@else{
+  <p class="text-slate-500 dark:text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</p>
+}

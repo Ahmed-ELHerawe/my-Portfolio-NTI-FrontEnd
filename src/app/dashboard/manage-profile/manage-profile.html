@@ -1,0 +1,230 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Profile</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Everything here appears on your portfolio website</p>
+  </div>
+</div>
+
+@if(loaded){
+  <form [formGroup]="myForm" (ngSubmit)="save()" novalidate class="space-y-8 max-w-4xl">
+
+    <!-- Hero -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-house text-blue-500 mr-2"></i> Hero Section</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="p-name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Your Name</label>
+          <input id="p-name" type="text" formControlName="name" placeholder="Ahmed Mohamed" [class]="inputClass('name')">
+          @if(isInvalid(ctrl('name'))){
+            <p class="text-red-500 text-xs mt-1">Name is required</p>
+          }
+        </div>
+        <div>
+          <label for="p-title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Job Title</label>
+          <input id="p-title" type="text" formControlName="title" placeholder="Full-Stack Web Developer" [class]="inputClass('title')">
+          @if(isInvalid(ctrl('title'))){
+            <p class="text-red-500 text-xs mt-1">Job title is required</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label for="p-badge" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Availability Badge</label>
+        <input id="p-badge" type="text" formControlName="badgeText" placeholder="Available for Freelance &amp; Full-Time Roles" [class]="inputClass('badgeText')">
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Leave it empty to hide the badge</p>
+      </div>
+
+      <div>
+        <label for="p-hero" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Hero Sentence</label>
+        <input id="p-hero" type="text" formControlName="heroText" placeholder="I build modern, scalable web applications using" [class]="inputClass('heroText')">
+      </div>
+
+      <div>
+        <label for="p-typing" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Typing Texts</label>
+        <textarea id="p-typing" rows="4" formControlName="typingTexts" placeholder="Angular &amp; Node.js&#10;Express &amp; MongoDB" [class]="inputClass('typingTexts', 'resize-none')"></textarea>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">One phrase per line. They are typed one after another at the end of the hero sentence.</p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-user text-purple-500 mr-2"></i> About</h2>
+
+      <div>
+        <label for="p-about" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">About Text</label>
+        <textarea id="p-about" rows="8" formControlName="about" placeholder="Passionate web developer committed to creating fast web apps.&#10;With over 5 years of experience, I specialize in clean code.&#10;I deliver end-to-end solutions tailored to your goals." [class]="inputClass('about', 'resize-y')"></textarea>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">The first line is the headline, and every following line is a paragraph. With a single line, it shows as a paragraph only.</p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-chart-simple text-pink-500 mr-2"></i> Stats</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div>
+          <label for="p-projects" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Projects Completed</label>
+          <input id="p-projects" type="number" min="0" formControlName="projectsCompleted" [class]="inputClass('projectsCompleted')">
+          @if(isInvalid(ctrl('projectsCompleted'))){
+            <p class="text-red-500 text-xs mt-1">Enter a number (0 or more)</p>
+          }
+        </div>
+        <div>
+          <label for="p-years" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Years Experience</label>
+          <input id="p-years" type="number" min="0" formControlName="yearsExperience" [class]="inputClass('yearsExperience')">
+          @if(isInvalid(ctrl('yearsExperience'))){
+            <p class="text-red-500 text-xs mt-1">Enter a number (0 or more)</p>
+          }
+        </div>
+        <div>
+          <label for="p-clients" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Client Satisfaction (%)</label>
+          <input id="p-clients" type="number" min="0" max="100" formControlName="clientSatisfaction" [class]="inputClass('clientSatisfaction')">
+          @if(isInvalid(ctrl('clientSatisfaction'))){
+            <p class="text-red-500 text-xs mt-1">Enter a number between 0 and 100</p>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-address-book text-emerald-500 mr-2"></i> Contact Info</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="p-email" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
+          <input id="p-email" type="email" formControlName="email" placeholder="you@example.com" [class]="inputClass('email')">
+          @if(isInvalid(ctrl('email'))){
+            <p class="text-red-500 text-xs mt-1">Wrong email format</p>
+          }
+        </div>
+        <div>
+          <label for="p-phone" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Phone / WhatsApp</label>
+          <input id="p-phone" type="tel" formControlName="phone" placeholder="+20 123 456 7890" [class]="inputClass('phone')">
+        </div>
+      </div>
+
+      <div>
+        <label for="p-location" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Location</label>
+        <input id="p-location" type="text" formControlName="location" placeholder="Cairo, Egypt (Available for Remote Work)" [class]="inputClass('location')">
+      </div>
+      <p class="text-slate-500 dark:text-slate-400 text-xs">Empty fields are hidden from the Contact section.</p>
+    </section>
+
+    <!-- Social -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-share-nodes text-amber-500 mr-2"></i> Social Links</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="p-github" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">GitHub</label>
+          <input id="p-github" type="url" formControlName="github" placeholder="https://github.com/username" [class]="inputClass('github')">
+          @if(isInvalid(ctrl('github'))){
+            <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+          }
+        </div>
+        <div>
+          <label for="p-linkedin" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">LinkedIn</label>
+          <input id="p-linkedin" type="url" formControlName="linkedIn" placeholder="https://linkedin.com/in/username" [class]="inputClass('linkedIn')">
+          @if(isInvalid(ctrl('linkedIn'))){
+            <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+          }
+        </div>
+        <div>
+          <label for="p-twitter" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Twitter</label>
+          <input id="p-twitter" type="url" formControlName="twitter" placeholder="https://twitter.com/username" [class]="inputClass('twitter')">
+          @if(isInvalid(ctrl('twitter'))){
+            <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+          }
+        </div>
+        <div>
+          <label for="p-codepen" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">CodePen</label>
+          <input id="p-codepen" type="url" formControlName="codepen" placeholder="https://codepen.io/username" [class]="inputClass('codepen')">
+          @if(isInvalid(ctrl('codepen'))){
+            <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+          }
+        </div>
+      </div>
+      <p class="text-slate-500 dark:text-slate-400 text-xs">Empty links are hidden from the hero section.</p>
+    </section>
+
+    <!-- Files -->
+    <section class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white"><i class="fas fa-paperclip text-cyan-500 mr-2"></i> Photo &amp; CV</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+
+        <!-- Photo -->
+        <div class="space-y-4">
+          <label for="p-img" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Your Photo</label>
+          <div class="w-40 h-48 rounded-2xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 overflow-hidden flex items-center justify-center">
+            @if(imgPreview || imgURL){
+              <img [src]="imgPreview || imgURL" alt="Profile photo" class="w-full h-full object-cover">
+            }
+            @else{
+              <i class="fas fa-user text-5xl text-slate-400 dark:text-slate-600"></i>
+            }
+          </div>
+          <input id="p-img" type="file" accept="image/jpeg,image/png,image/webp" (change)="onImgChange($event)"
+            class="block w-full text-sm text-slate-600 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold hover:file:bg-blue-700 file:cursor-pointer">
+          @if(imgError){
+            <p class="text-red-500 text-xs">{{imgError}}</p>
+          }
+          @if(imgFile){
+            <p class="text-emerald-600 dark:text-emerald-400 text-xs">New photo selected. Press Save to upload it.</p>
+          }
+          <p class="text-slate-500 dark:text-slate-400 text-xs">jpg, png or webp, up to 5MB.</p>
+        </div>
+
+        <!-- CV -->
+        <div class="space-y-4">
+          <label for="p-cv" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Your CV (PDF)</label>
+          <div class="h-48 flex items-center">
+            @if(cvURL){
+              <a [href]="cvURL" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-sm hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <i class="fas fa-file-pdf text-red-500"></i> View current CV
+              </a>
+            }
+            @else{
+              <span class="text-slate-500 dark:text-slate-400 text-sm">No CV uploaded yet. The download button stays hidden on the website.</span>
+            }
+          </div>
+          <input id="p-cv" type="file" accept="application/pdf" (change)="onCvChange($event)"
+            class="block w-full text-sm text-slate-600 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold hover:file:bg-blue-700 file:cursor-pointer">
+          @if(cvError){
+            <p class="text-red-500 text-xs">{{cvError}}</p>
+          }
+          @if(cvFile){
+            <p class="text-emerald-600 dark:text-emerald-400 text-xs">New CV selected. Press Save to upload it.</p>
+          }
+          <p class="text-slate-500 dark:text-slate-400 text-xs">PDF only, up to 5MB.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Save -->
+    <div class="flex justify-end">
+      <button type="submit" [disabled]="saving"
+        class="px-8 py-3.5 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
+        @if(saving){
+          Saving... <i class="fas fa-spinner fa-spin ml-2"></i>
+        }
+        @else{
+          Save Changes <i class="fas fa-floppy-disk ml-2"></i>
+        }
+      </button>
+    </div>
+  </form>
+}
+@else if(loadFailed){
+  <div class="glass-card p-8 rounded-3xl max-w-xl text-center space-y-4">
+    <i class="fas fa-triangle-exclamation text-4xl text-amber-500"></i>
+    <p class="text-slate-700 dark:text-slate-300">Could not load your profile. Make sure the backend is running.</p>
+    <button type="button" (click)="loadProfile()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all">Try again</button>
+  </div>
+}
+@else{
+  <p class="text-slate-500 dark:text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</p>
+}

@@ -1,0 +1,41 @@
+<section id="skills" class="py-24 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-blue-600 dark:text-blue-500 font-bold text-sm tracking-wider uppercase mb-2">TECHNICAL EXPERTISE</h2>
+      <p class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">Technologies &amp; Tools I Master</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      @for(group of groups; track group.key){
+        @if(group.skills.length){
+          <div class="glass-card p-8 rounded-3xl transition-all duration-300" [class]="group.hover">
+
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-6" [class]="group.iconBox">
+              <i [class]="group.icon"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">{{group.title}}</h3>
+
+            <div class="space-y-5">
+              @for(skill of group.skills; track skill._id){
+                <div>
+                  <div class="flex justify-between text-sm font-semibold mb-2">
+                    <span class="text-slate-800 dark:text-slate-200">{{skill.name}}</span>
+                    <span [class]="group.percent">{{skill.level}}%</span>
+                  </div>
+                  <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full" [class]="group.bar" [style.width.%]="skill.level"></div>
+                  </div>
+                </div>
+              }
+            </div>
+
+          </div>
+        }
+      }
+    </div>
+
+    @if(loaded && !hasSkills){
+      <p class="text-center text-slate-500 dark:text-slate-400">Skills will appear here soon.</p>
+    }
+  </div>
+</section>

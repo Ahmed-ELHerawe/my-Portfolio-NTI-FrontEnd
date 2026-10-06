@@ -1,0 +1,53 @@
+<header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800/60 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+          &lt;/&gt;
+        </div>
+        <span class="font-bold text-xl tracking-wide text-slate-900 dark:text-white">
+          Dev<span class="text-blue-500">.Portfolio</span>
+        </span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8">
+        @for(link of links; track link.href){
+          <a [href]="link.href" class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">{{link.name}}</a>
+        }
+      </nav>
+
+      <div class="hidden md:flex items-center gap-4">
+        <button type="button" (click)="themeService.toggle()" aria-label="Toggle theme"
+          class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+          <i class="fas" [class.fa-moon]="themeService.isDark" [class.fa-sun]="!themeService.isDark" [class.text-amber-500]="!themeService.isDark"></i>
+        </button>
+        <a href="#contact" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 hover:scale-105 active:scale-95 transition-all">
+          Hire Me <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+
+      <div class="md:hidden flex items-center gap-3">
+        <button type="button" (click)="themeService.toggle()" aria-label="Toggle theme"
+          class="p-2 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300">
+          <i class="fas" [class.fa-moon]="themeService.isDark" [class.fa-sun]="!themeService.isDark" [class.text-amber-500]="!themeService.isDark"></i>
+        </button>
+        <button type="button" (click)="toggleMenu()" aria-label="Toggle menu"
+          class="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white focus:outline-hidden">
+          <i class="fas text-2xl" [class.fa-bars]="!menuOpen" [class.fa-xmark]="menuOpen"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if(menuOpen){
+    <div class="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-6 space-y-4">
+      @for(link of links; track link.href){
+        <a [href]="link.href" (click)="closeMenu()" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 font-semibold py-2">{{link.name}}</a>
+      }
+      <a href="#contact" (click)="closeMenu()" class="block w-full text-center py-3 bg-blue-600 text-white font-bold rounded-xl mt-4">
+        Get In Touch
+      </a>
+    </div>
+  }
+</header>

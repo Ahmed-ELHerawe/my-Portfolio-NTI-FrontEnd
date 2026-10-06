@@ -1,0 +1,105 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Messages</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Messages sent from the contact form on your website</p>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <button type="button" (click)="setFilter('all')"
+      class="px-5 py-2 rounded-full text-sm font-bold transition-all"
+      [class]="filter == 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'">
+      All ({{messages.length}})
+    </button>
+    <button type="button" (click)="setFilter('unread')"
+      class="px-5 py-2 rounded-full text-sm font-bold transition-all"
+      [class]="filter == 'unread' ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'">
+      Unread ({{unreadCount}})
+    </button>
+  </div>
+</div>
+
+@if(loaded){
+  <div class="space-y-3 max-w-4xl">
+    @for(message of visible; track message._id){
+      <article class="glass-card rounded-2xl overflow-hidden">
+
+        <button type="button" (click)="toggle(message)" [attr.aria-expanded]="expandedId == message._id"
+          class="w-full text-left p-5 flex items-start gap-4 hover:bg-slate-500/5 transition-colors">
+
+          <span class="mt-2 w-2.5 h-2.5 rounded-full shrink-0" [class]="message.isRead ? 'bg-transparent' : 'bg-blue-500'"></span>
+
+          <span class="min-w-0 flex-1">
+            <span class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <span class="text-slate-900 dark:text-white" [class]="message.isRead ? 'font-semibold' : 'font-extrabold'">{{message.name}}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400">{{message.createdAt | date:'MMM d, y, h:mm a'}}</span>
+            </span>
+            <span class="block text-sm text-slate-700 dark:text-slate-300 truncate" [class]="message.isRead ? '' : 'font-bold'">{{message.subject}}</span>
+            @if(expandedId != message._id){
+              <span class="block text-sm text-slate-500 dark:text-slate-400 truncate">{{message.body}}</span>
+            }
+          </span>
+
+          <i class="fas fa-chevron-down text-xs text-slate-400 mt-2 transition-transform" [class]="expandedId == message._id ? 'rotate-180' : ''"></i>
+        </button>
+
+        @if(expandedId == message._id){
+          <div class="px-5 pb-5 pl-11 space-y-5">
+            <a [href]="'mailto:' + message.email" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              <i class="fas fa-envelope"></i> {{message.email}}
+            </a>
+
+            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line break-words">{{message.body}}</p>
+
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <a [href]="replyLink(message)"
+                class="px-4 py-2 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors">
+                <i class="fas fa-reply mr-2"></i> Reply
+              </a>
+
+              <button type="button" (click)="setRead(message, !message.isRead)"
+                class="px-4 py-2 rounded-xl text-sm font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <i class="fas mr-2" [class]="message.isRead ? 'fa-envelope' : 'fa-envelope-open'"></i>
+                {{message.isRead ? 'Mark as unread' : 'Mark as read'}}
+              </button>
+
+              @if(confirmId == message._id){
+                <span class="text-xs text-slate-500 dark:text-slate-400 ml-1">Delete this message?</span>
+                <button type="button" (click)="confirmDelete(message)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-colors">Yes</button>
+                <button type="button" (click)="cancelDelete()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">No</button>
+              }
+              @else{
+                <button type="button" (click)="askDelete(message._id)"
+                  class="px-4 py-2 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors">
+                  <i class="fas fa-trash mr-2"></i> Delete
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </article>
+    }
+  </div>
+
+  @if(!messages.length){
+    <div class="glass-card p-10 rounded-3xl max-w-xl text-center space-y-3">
+      <i class="fas fa-inbox text-4xl text-slate-400 dark:text-slate-600"></i>
+      <p class="text-slate-600 dark:text-slate-400">No messages yet. Messages from your contact form will show up here.</p>
+    </div>
+  }
+  @else if(!visible.length){
+    <div class="glass-card p-10 rounded-3xl max-w-xl text-center space-y-3">
+      <i class="fas fa-circle-check text-4xl text-emerald-500"></i>
+      <p class="text-slate-600 dark:text-slate-400">You have no unread messages.</p>
+    </div>
+  }
+}
+@else if(loadFailed){
+  <div class="glass-card p-8 rounded-3xl max-w-xl text-center space-y-4">
+    <i class="fas fa-triangle-exclamation text-4xl text-amber-500"></i>
+    <p class="text-slate-700 dark:text-slate-300">Could not load your messages. Make sure the backend is running.</p>
+    <button type="button" (click)="loadMessages()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all">Try again</button>
+  </div>
+}
+@else{
+  <p class="text-slate-500 dark:text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</p>
+}

@@ -1,0 +1,172 @@
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Projects</h1>
+    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">The projects shown in the Projects section</p>
+  </div>
+  <button type="button" (click)="openAdd()"
+    class="px-5 py-2.5 rounded-xl text-sm font-bold bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 hover:scale-105 active:scale-95 transition-all">
+    <i class="fas fa-plus mr-2"></i> Add Project
+  </button>
+</div>
+
+<!-- Add / Edit Form -->
+@if(showForm){
+  <form id="project-form" [formGroup]="myForm" (ngSubmit)="save()" novalidate class="glass-card p-6 sm:p-8 rounded-3xl space-y-6 max-w-3xl mb-10 scroll-mt-24">
+    <h2 class="text-lg font-bold text-slate-900 dark:text-white">
+      <i class="fas text-blue-500 mr-2" [class.fa-plus]="!editingId" [class.fa-pen]="editingId"></i>
+      {{editingId ? 'Edit Project' : 'Add Project'}}
+    </h2>
+
+    <div>
+      <label for="pr-title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Title</label>
+      <input id="pr-title" type="text" formControlName="title" placeholder="E-Commerce Platform" [class]="inputClass('title')">
+      @if(isInvalid(ctrl('title'))){
+        <p class="text-red-500 text-xs mt-1">Title is required</p>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label for="pr-category" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Category</label>
+        <select id="pr-category" formControlName="category" [class]="inputClass('category')">
+          <option value="fullstack">Full-Stack</option>
+          <option value="frontend">Frontend</option>
+          <option value="ui">UI/UX Design</option>
+        </select>
+      </div>
+      <div>
+        <label for="pr-techs" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Technologies</label>
+        <input id="pr-techs" type="text" formControlName="techs" placeholder="Angular, Node.js, MongoDB" [class]="inputClass('techs')">
+      </div>
+    </div>
+
+    @if(techsList.length){
+      <div class="flex flex-wrap gap-2 -mt-2">
+        @for(tech of techsList; track $index){
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">{{tech}}</span>
+        }
+      </div>
+    }
+    <p class="text-slate-500 dark:text-slate-400 text-xs -mt-3">Separate technologies with commas. The first one appears as a tag on the project card.</p>
+
+    <div>
+      <label for="pr-desc" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Description</label>
+      <textarea id="pr-desc" rows="5" formControlName="desc" placeholder="What the project does, and what you built in it..." [class]="inputClass('desc', 'resize-y')"></textarea>
+      @if(isInvalid(ctrl('desc'))){
+        <p class="text-red-500 text-xs mt-1">Description is required</p>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label for="pr-github" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">GitHub Link (optional)</label>
+        <input id="pr-github" type="url" formControlName="githubURL" placeholder="https://github.com/username/project" [class]="inputClass('githubURL')">
+        @if(isInvalid(ctrl('githubURL'))){
+          <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+        }
+      </div>
+      <div>
+        <label for="pr-live" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Live Demo Link (optional)</label>
+        <input id="pr-live" type="url" formControlName="liveURL" placeholder="https://my-project.com" [class]="inputClass('liveURL')">
+        @if(isInvalid(ctrl('liveURL'))){
+          <p class="text-red-500 text-xs mt-1">Link must start with http:// or https://</p>
+        }
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="space-y-4">
+      <label for="pr-img" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Project Image</label>
+      <div class="w-full max-w-xs h-44 rounded-2xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 overflow-hidden flex items-center justify-center">
+        @if(imgPreview || imgURL){
+          <img [src]="imgPreview || imgURL" alt="Project image" class="w-full h-full object-cover">
+        }
+        @else{
+          <i class="fas fa-image text-5xl text-slate-400 dark:text-slate-600"></i>
+        }
+      </div>
+      <input id="pr-img" type="file" accept="image/jpeg,image/png,image/webp" (change)="onImgChange($event)"
+        class="block w-full text-sm text-slate-600 dark:text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold hover:file:bg-blue-700 file:cursor-pointer">
+      @if(imgError){
+        <p class="text-red-500 text-xs">{{imgError}}</p>
+      }
+      @if(imgFile){
+        <p class="text-emerald-600 dark:text-emerald-400 text-xs">New image selected. Press Save to upload it.</p>
+      }
+      <p class="text-slate-500 dark:text-slate-400 text-xs">jpg, png or webp, up to 5MB. A wide image (like 16:9) looks best on the card.</p>
+    </div>
+
+    <div class="flex flex-wrap justify-end gap-3 pt-2">
+      <button type="button" (click)="closeForm()" class="px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm">Cancel</button>
+      <button type="submit" [disabled]="saving"
+        class="px-8 py-3 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100">
+        @if(saving){
+          Saving... <i class="fas fa-spinner fa-spin ml-2"></i>
+        }
+        @else{
+          {{editingId ? 'Save Changes' : 'Add Project'}} <i class="fas fa-floppy-disk ml-2"></i>
+        }
+      </button>
+    </div>
+  </form>
+}
+
+<!-- Projects List -->
+@if(loaded){
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    @for(project of projects; track project._id){
+      <article class="glass-card rounded-3xl overflow-hidden flex flex-col">
+        <div class="h-40 bg-slate-200 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+          @if(imageOf(project)){
+            <img [src]="imageOf(project)" [alt]="project.title" class="w-full h-full object-cover">
+          }
+          @else{
+            <i class="fas fa-image text-4xl text-slate-400 dark:text-slate-600"></i>
+          }
+        </div>
+
+        <div class="p-5 flex flex-col flex-1">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs font-bold px-3 py-1 rounded-full border" [class]="categoryOf(project.category).tag">{{categoryOf(project.category).label}}</span>
+            @for(tech of project.techs.slice(0, 3); track $index){
+              <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">{{tech}}</span>
+            }
+          </div>
+          <h2 class="font-bold text-lg text-slate-900 dark:text-white mb-1">{{project.title}}</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">{{project.desc}}</p>
+
+          <div class="mt-auto flex items-center justify-end gap-1">
+            @if(confirmId == project._id){
+              <span class="text-xs text-slate-500 dark:text-slate-400 mr-1">Delete this project?</span>
+              <button type="button" (click)="confirmDelete(project)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-colors">Yes</button>
+              <button type="button" (click)="cancelDelete()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">No</button>
+            }
+            @else{
+              <button type="button" (click)="openEdit(project)" [attr.aria-label]="'Edit ' + project.title"
+                class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-500 hover:bg-blue-500/10 transition-colors"><i class="fas fa-pen mr-1"></i> Edit</button>
+              <button type="button" (click)="askDelete(project._id)" [attr.aria-label]="'Delete ' + project.title"
+                class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-red-500 hover:bg-red-500/10 transition-colors"><i class="fas fa-trash mr-1"></i> Delete</button>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+
+  @if(!projects.length){
+    <div class="glass-card p-10 rounded-3xl max-w-xl text-center space-y-3">
+      <i class="fas fa-folder-open text-4xl text-slate-400 dark:text-slate-600"></i>
+      <p class="text-slate-600 dark:text-slate-400">No projects yet. Press <strong>Add Project</strong> to create the first one.</p>
+    </div>
+  }
+}
+@else if(loadFailed){
+  <div class="glass-card p-8 rounded-3xl max-w-xl text-center space-y-4">
+    <i class="fas fa-triangle-exclamation text-4xl text-amber-500"></i>
+    <p class="text-slate-700 dark:text-slate-300">Could not load your projects. Make sure the backend is running.</p>
+    <button type="button" (click)="loadProjects()" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all">Try again</button>
+  </div>
+}
+@else{
+  <p class="text-slate-500 dark:text-slate-400"><i class="fas fa-spinner fa-spin mr-2"></i> Loading...</p>
+}
